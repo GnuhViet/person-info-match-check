@@ -23,7 +23,7 @@ public class App {
     public static final SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy/MM/dd");
     public static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
     public static final String inputFileName = "src/main/java/org/example/sample/input.csv";
-    public static double matchScore = 0.99; // 0-0.9999
+    public static double matchScore = 0.8; // 0-0.9999
 
     public static void main(String[] args) {
         try {

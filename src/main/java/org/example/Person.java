@@ -2,7 +2,6 @@ package org.example;
 
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
-import com.intuit.fuzzymatcher.domain.Score;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

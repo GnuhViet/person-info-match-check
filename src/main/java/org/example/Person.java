@@ -53,10 +53,9 @@ public class Person {
 
     @Override
     public String toString() {
-        return "{" +
-                fullName + ", " +
+        return fullName + ", " +
                 App.inputDateFormat.format(dateOfBirth) + ", " +
                 placeOfBirth + ", " +
-                personId + '}';
+                personId;
     }
 }

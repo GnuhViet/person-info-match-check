@@ -6,14 +6,14 @@ import com.intuit.fuzzymatcher.domain.Element;
 import com.intuit.fuzzymatcher.domain.ElementType;
 import com.intuit.fuzzymatcher.domain.Match;
 import com.opencsv.*;
-import com.opencsv.exceptions.CsvValidationException;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,8 +44,8 @@ public class App {
                         .addElement(new Element.Builder<String>().setValue(p.getPlaceOfBirth()).setType(ElementType.ADDRESS).createElement())
                         .addElement(new Element.Builder<String>().setValue(p.getPersonId()).setType(ElementType.PHONE).createElement())
                         .setThreshold(matchScore)
-                        .createDocument()).collect(Collectors.toList()
-        );
+                        .createDocument()
+        ).collect(Collectors.toList());
 
         MatchService matchService = new MatchService();
         Map<String, List<Match<Document>>> matchResult = matchService.applyMatchByDocId(documentList);
@@ -56,21 +56,14 @@ public class App {
 
         Set<OutputObj> result = new HashSet<>();
 
-        matchResult.forEach((key, value) -> value.forEach(match -> {
-            OutputObj outputObj = OutputObj.builder()
-                    .matchData(Person.toPerson(match.getData()).toString())
-                    .matchWith(Person.toPerson(match.getMatchedWith()).toString())
-                    .score(String.valueOf(match.getScore().getResult()))
-                    .build();
-
-            result.add(outputObj);
-
-            System.out.printf("Data: {%s} Matched With: {%s} Score: %s%n",
-                    outputObj.getMatchData(),
-                    outputObj.getMatchWith(),
-                    outputObj.getScore()
-            );
-        }));
+        matchResult.forEach((key, value) -> value.forEach(match ->
+                result.add(OutputObj.builder()
+                        .matchData(Person.toPerson(match.getData()).toString())
+                        .matchWith(Person.toPerson(match.getMatchedWith()).toString())
+                        .score(String.valueOf(match.getScore().getResult()))
+                        .build()
+                )
+        ));
 
         return result;
     }
@@ -107,8 +100,8 @@ public class App {
             writer.writeNext(new String[]{"Data", "Score"});
 
             for (OutputObj outputObj : output) {
-                String[] line1 = { outputObj.matchData, outputObj.score };
-                String[] line2 = { outputObj.matchWith, outputObj.score };
+                String[] line1 = {outputObj.matchData, outputObj.score};
+                String[] line2 = {outputObj.matchWith, outputObj.score};
                 writer.writeNext(line1);
                 writer.writeNext(line2);
             }

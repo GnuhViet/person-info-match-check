@@ -20,25 +20,27 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class App {
+    private static final MatchService matchService = new MatchService();
+    private static final double matchScore = 0.8; // 0-0.9999
+
     public static final SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy/MM/dd");
     public static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-    public static final String inputFileName = "src/main/java/org/example/sample/input.csv";
-    public static final String outputFileName = "src/main/java/org/example/sample/output.csv";
-    public static double matchScore = 0.8; // 0-0.9999
+    private static final String inputFileName = "src/main/java/org/example/sample/input.csv";
+    private static final String outputFileName = "src/main/java/org/example/sample/output.csv";
 
     public static void main(String[] args) {
         try {
-            List<Person> personList = readCsvFile(inputFileName);
-            Set<OutputObj> output = matchCheck(personList);
+            List<Person> people = readCsvFile(inputFileName);
+            Set<OutputObj> output = matchCheck(people);
             writeCsvFile(output, outputFileName);
-            log.info("Match checking successful");
+            log.info("Hoàn tất kiểm tra trùng lặp, kết quả đã ghi ra file");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
     public static Set<OutputObj> matchCheck(List<Person> personList) {
-        List<Document> documentList = personList.stream().map(p ->
+        List<Document> documents = personList.stream().map(p ->
                 new Document.Builder(p.getPersonId())
                         .addElement(new Element.Builder<String>().setValue(p.getFullName()).setType(ElementType.NAME).createElement())
                         .addElement(new Element.Builder<Date>().setValue(p.getDateOfBirth()).setType(ElementType.DATE).createElement())
@@ -48,8 +50,12 @@ public class App {
                         .createDocument()
         ).collect(Collectors.toList());
 
-        MatchService matchService = new MatchService();
-        Map<String, List<Match<Document>>> matchResult = matchService.applyMatchByDocId(documentList);
+        long start, end;
+
+        start = System.currentTimeMillis();
+        Map<String, List<Match<Document>>> matchResult = matchService.applyMatchByDocId(documents);
+        end = System.currentTimeMillis();
+        log.info("Thời gian thực hiện kiểm tra: {}ms", end-start);
 
         if (matchResult.isEmpty()) {
             return null;

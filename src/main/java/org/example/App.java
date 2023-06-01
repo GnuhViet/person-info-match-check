@@ -31,6 +31,7 @@ public class App {
             List<Person> personList = readCsvFile(inputFileName);
             Set<OutputObj> output = matchCheck(personList);
             writeCsvFile(output, outputFileName);
+            log.info("Match checking successful");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -91,7 +92,9 @@ public class App {
     }
 
     public static void writeCsvFile(Set<OutputObj> output, String fileName) throws Exception {
-        Objects.requireNonNull(output);
+        if (output == null) {
+            output = Collections.emptySet();
+        }
         try (CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(fileName))
                 .withSeparator(';')
                 .build()) {
@@ -99,12 +102,12 @@ public class App {
             writer.writeNext(new String[]{"Số cặp nghi vấn trùng nhau: " + output.size()});
             writer.writeNext(new String[]{"Data", "Score"});
 
-            for (OutputObj outputObj : output) {
-                String[] line1 = {outputObj.matchData, outputObj.score};
-                String[] line2 = {outputObj.matchWith, outputObj.score};
+            output.forEach(data -> {
+                String[] line1 = {data.matchData, data.score};
+                String[] line2 = {data.matchWith, data.score};
                 writer.writeNext(line1);
                 writer.writeNext(line2);
-            }
+            });
         }
     }
 
